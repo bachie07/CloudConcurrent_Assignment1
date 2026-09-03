@@ -1,0 +1,31 @@
+#recorder { 
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    margin: 20px;
+    border: 2px solid black;
+} 
+
+.status {
+    color: gray;
+    font-weight: bold;
+}
+
+.status.recording{
+    color: red;
+    background-color:antiquewhite;
+}
+
+.dot{
+    
+}
+
+
+button{
+
+    padding: 8px 16px;
+
+}
