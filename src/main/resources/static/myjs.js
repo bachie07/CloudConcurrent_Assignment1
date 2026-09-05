@@ -7,19 +7,26 @@ const btn = document.querySelector("#recordButton")
 
 
 
-async function startRecording(){
+async function startRecording(){ // start recording function 
 
     try{ 
-
 
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true});
 
     const recorder = new MediaRecorder(stream);
+	
+	const chunks = [];
+	
+	recorder.ondataavailable = (event) => {
+		chunks.push(event.data);
+	}
 
     recorder.onstop = () => {
-
-        console.log("Recording stopped")
+		
+		const audioBlob = Blob(chunks, { type: "audio/webm"})
+	
+		console.log("Recording stopped, blob size:", audioBlob.size)
     }
 
     recorder.start();
