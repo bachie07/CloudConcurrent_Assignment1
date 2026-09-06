@@ -31,9 +31,8 @@ async function startRecording(){ // start recording function
     recorder.onstop = () => {
 		
 		const audioBlob = new Blob(chunks, { type: "audio/webm"})
-	
-		console.log("Recording stopped, blob size:", audioBlob.size)
 		
+		uploadAudio(audioBlob);
     }
 
     recorder.start();
@@ -96,8 +95,11 @@ btn.addEventListener("click", () => {
 		recording = true;
 		statusMessage.textContent = 'Recording';
 		statusE1.classList.add('recording');
-		startRecording();
-		
+		btn.textContent = "Stop";
+		btn.disabled = true;
+		startRecording().then(() => {
+			btn.disabled = false;
+		});
 		
 	}
 	
@@ -105,8 +107,7 @@ btn.addEventListener("click", () => {
 		
 		recording = false;
 		recorder.stop();
-		statusMessage.textContent = "Idle";
-		statusE1.classList.remove('recording');
+		btn.textContent = "Record";
 		
 	}
     
