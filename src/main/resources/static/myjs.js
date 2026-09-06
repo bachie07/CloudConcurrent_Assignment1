@@ -5,6 +5,12 @@ const statusMessage = document.querySelector("#statusMess")
 
 const btn = document.querySelector("#recordButton")
 
+let recording = false;
+
+let recorder =  null;
+
+
+
 
 
 async function startRecording(){ // start recording function 
@@ -14,7 +20,7 @@ async function startRecording(){ // start recording function
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true});
 
-    const recorder = new MediaRecorder(stream);
+    recorder = new MediaRecorder(stream);
 	
 	const chunks = [];
 	
@@ -24,18 +30,16 @@ async function startRecording(){ // start recording function
 
     recorder.onstop = () => {
 		
-		const audioBlob = Blob(chunks, { type: "audio/webm"})
+		const audioBlob = new Blob(chunks, { type: "audio/webm"})
 	
 		console.log("Recording stopped, blob size:", audioBlob.size)
+		
     }
 
     recorder.start();
 
     console.log("Recording started...")
 
-    setTimeout(() => {
-        recorder.stop();
-    },3000)
 
     }
     
@@ -49,10 +53,27 @@ async function startRecording(){ // start recording function
 
 
 btn.addEventListener("click", () => {
+	
+	if(!recording){
+		
+		recording = true;
+		statusMessage.textContent = 'Recording';
+		statusE1.classList.add('recording');
+		startRecording();
+		
+		
+	}
+	
+	else{
+		
+		recording = false;
+		recorder.stop();
+		statusMessage.textContent = "Idle";
+		statusE1.classList.remove('recording');
+		
+	}
     
-    statusMessage.textContent = 'Recording';
-    statusE1.classList.add('recording');
-    startRecording();
+
 
 })
 
