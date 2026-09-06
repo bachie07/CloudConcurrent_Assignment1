@@ -51,6 +51,43 @@ async function startRecording(){ // start recording function
     }
 }
 
+async function uploadAudio(audioBlob){
+
+    statusMessage.textContent = "Transcribing...";
+
+    const formData = new FormData();
+
+    formData.append("audio", audioBlob, "recording.webm");
+
+    try {
+
+        const response = await fetch("http://localhost:8080/api/transcribe" , {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok){
+            throw new Error(`Server error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        statusMessage.textContent = data.text;
+    }
+
+    catch(error){
+
+        statusMessage.textContent = "Transcription failed";
+        console.error("Upload failed: ", error)
+
+    } finally {
+        statusE1.classList.remove(`recording`);
+        btn.disabled = false;
+    }
+    
+}
+
+
 
 btn.addEventListener("click", () => {
 	
@@ -73,7 +110,6 @@ btn.addEventListener("click", () => {
 		
 	}
     
-
 
 })
 
