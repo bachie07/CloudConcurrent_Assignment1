@@ -4,16 +4,25 @@ import cloudconcurrent_assigment1.services.AppStateService;
 
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
 import java.time.Instant;
 import java.time.Duration;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+
 
 
 @RestController
 public class AdminController {
 	
 	private final AppStateService appStateService;
-		
+			
 	private double calculateUpTimeSeconds(Instant start, Instant now) {
 		
 		Duration duration = Duration.between(start, now);
@@ -43,8 +52,26 @@ public class AdminController {
 				
 		);
 				
-				
+			
 	}
+	
+	@PostMapping("/api/v1/admin/shutdown")
+	public ResponseEntity<Map<String, Object>> shutdownService(){
+		
+		Map<String, Object> body = Map.of(
+				
+				"timestamp", Instant.now().toString(),
+				"status", HttpStatus.CONFLICT.value(),
+				"error", "Conflict",
+				"message", "Graceful shutdown is already in progress"
+				
+		);
+		
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		
+	}
+	
+	
 	
 
 }
