@@ -12,11 +12,11 @@ public class AppStateService {
     
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
-    public AppStateService() {
-        this.serverStartTime = Instant.now();
+    public AppStateService() { // constructor 
+        this.serverStartTime = Instant.now(); // setting server start time
     }
 
-    public Instant getServerStartTime() {
+    public Instant getServerStartTime() { // get methods 
         return serverStartTime;
     }
     

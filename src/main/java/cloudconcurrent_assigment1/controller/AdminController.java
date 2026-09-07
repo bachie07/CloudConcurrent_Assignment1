@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.time.Instant;
 import java.time.Duration;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 
@@ -22,8 +22,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AdminController {
 	
 	private final AppStateService appStateService;
+	private final ApplicationContext applicationContext;
+
 			
-	private double calculateUpTimeSeconds(Instant start, Instant now) {
+	private double calculateUpTimeSeconds(Instant start, Instant now) { // calucation duration between server start and current time
 		
 		Duration duration = Duration.between(start, now);
 		
@@ -33,18 +35,19 @@ public class AdminController {
 		
 	}
 	
-	public AdminController(AppStateService appStateService) {
+	public AdminController(AppStateService appStateService, ApplicationContext applicationContext ) { // constructor
 		this.appStateService = appStateService;
+		this.applicationContext = applicationContext;
 	}
 
 	
-	@GetMapping("/api/v1/admin/uptime")
+	@GetMapping("/api/v1/admin/uptime") // uptime API method
 	
 	public Map<String, Object> serviceReponse(){
 		
-		Instant now = Instant.now();
+		Instant now = Instant.now(); // get current time
 		
-		return Map.of(
+		return Map.of( // required body value
 				
 				"utcServerStart", appStateService.getServerStartTime(),
 				"utcNow", now,
@@ -55,19 +58,58 @@ public class AdminController {
 			
 	}
 	
-	@PostMapping("/api/v1/admin/shutdown")
+	
+	
+	@PostMapping("/api/v1/admin/shutdown") // shutdown API
 	public ResponseEntity<Map<String, Object>> shutdownService(){
 		
-		Map<String, Object> body = Map.of(
+		if(appStateService.getShuttingDown().compareAndSet(false, true)) { // if server is on, set shuttingDown to true
+			
+			Map<String, Object> body = Map.of( // return message
+					
+					"message", "Graceful shutdown requested"
+					
+					);
+			
+			
+			new Thread(() -> { // new thread handling shutdown
 				
-				"timestamp", Instant.now().toString(),
-				"status", HttpStatus.CONFLICT.value(),
-				"error", "Conflict",
-				"message", "Graceful shutdown is already in progress"
+				try {
+					Thread.sleep(500); // standard delay time ( safeguard ) 
+					
+				} catch(InterruptedException e){
+					
+					Thread.currentThread().interrupt();
+					
+				}
+				SpringApplication.exit(applicationContext, () -> 0); // // shutdown command
 				
-		);
+			}).start();
+			
+			
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(body); // original thread return body status
+			
+					
+		}
 		
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		else { // if shutdown already happen 
+			
+			Map<String, Object> body = Map.of( // return conflict error body 
+					
+					"timestamp", Instant.now().toString(),
+					"status", HttpStatus.CONFLICT.value(),
+					"error", "Conflict",
+					"message", "Graceful shutdown is already in progress",
+					"path", "/api/v1/admin/shutdown"
+					
+			);
+			
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+			
+			
+		}
+		
+
 		
 	}
 	

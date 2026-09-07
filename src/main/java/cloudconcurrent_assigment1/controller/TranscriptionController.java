@@ -17,7 +17,7 @@ public class TranscriptionController {
 		this.openAiAPIKey = openAiAPIKey;
 	}
 	
-	@PostMapping("/api/transcribe")
+	@PostMapping("/api/transcribe") // post method for getting the audio 
 	public String transcribe(@RequestParam("audio") MultipartFile audio) {
 		System.out.println("Received file: " + audio.getOriginalFilename() + ", size: " + audio.getSize() + " bytes");
 		return "received";
