@@ -73,6 +73,7 @@ public class TranscriptionController {
 		appStateService.addInputTokens(inputTokens);
 		appStateService.addOutputTokens(outputTokens);
 		
+		
 		return Map.of("text", text);
 	}
 	
