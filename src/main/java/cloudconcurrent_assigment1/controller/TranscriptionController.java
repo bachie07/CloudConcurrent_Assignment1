@@ -21,6 +21,9 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 @RestController
@@ -31,6 +34,8 @@ public class TranscriptionController {
 	private final RestClient restClient;
 	
 	private final AppStateService appStateService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(TranscriptionController.class);
 
 	
 	public TranscriptionController(@Value("${OPENAI_API_KEY}") String openAiAPIKey, AppStateService appStateService) {
@@ -41,7 +46,8 @@ public class TranscriptionController {
 	
 	@PostMapping("/api/transcribe") // post method for getting the audio 
 	public Map<String, Object> transcribe(@RequestParam("audio") MultipartFile audio) throws IOException {
-		System.out.println("Received file: " + audio.getOriginalFilename() + ", size: " + audio.getSize() + " bytes");
+		
+		logger.info("Received file: {}, size: {} bytes", audio.getOriginalFilename(), audio.getSize());
 		
 		ByteArrayResource audioResource = new ByteArrayResource(audio.getBytes()) {
 			@Override
@@ -73,6 +79,7 @@ public class TranscriptionController {
 		appStateService.addInputTokens(inputTokens);
 		appStateService.addOutputTokens(outputTokens);
 		
+		logger.info("Transcription successful, {} input tokens, {} output tokens", inputTokens, outputTokens);
 		
 		return Map.of("text", text);
 	}
