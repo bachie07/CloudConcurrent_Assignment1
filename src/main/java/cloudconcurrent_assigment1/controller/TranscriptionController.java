@@ -7,11 +7,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import cloudconcurrent_assigment1.services.AppStateService;
+
 import org.springframework.web.client.RestClient;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+
+import java.util.Map;
+
 
 
 @RestController
@@ -21,14 +30,17 @@ public class TranscriptionController {
 	
 	private final RestClient restClient;
 	
+	private final AppStateService appStateService;
+
 	
-	public TranscriptionController(@Value("${OPENAI_API_KEY}") String openAiAPIKey) {
+	public TranscriptionController(@Value("${OPENAI_API_KEY}") String openAiAPIKey, AppStateService appStateService) {
 		this.openAiAPIKey = openAiAPIKey;
 		this.restClient = RestClient.create();
+		this.appStateService = appStateService;
 	}
 	
 	@PostMapping("/api/transcribe") // post method for getting the audio 
-	public String transcribe(@RequestParam("audio") MultipartFile audio) throws IOException {
+	public Map<String, Object> transcribe(@RequestParam("audio") MultipartFile audio) throws IOException {
 		System.out.println("Received file: " + audio.getOriginalFilename() + ", size: " + audio.getSize() + " bytes");
 		
 		ByteArrayResource audioResource = new ByteArrayResource(audio.getBytes()) {
@@ -49,10 +61,19 @@ public class TranscriptionController {
 				.body(body)
 				.retrieve()
 				.body(String.class);
+						
+		JsonNode json = JsonMapper.shared().readTree(rawResponse);
+		String text = json.get("text").asString();
+
+		JsonNode usage = json.get("usage");
+		long inputTokens = usage.get("input_tokens").asLong();
+		long outputTokens = usage.get("output_tokens").asLong();
 		
-		System.out.println("OpenAI raw response: " + rawResponse);
+
+		appStateService.addInputTokens(inputTokens);
+		appStateService.addOutputTokens(outputTokens);
 		
-		return rawResponse;
+		return Map.of("text", text);
 	}
 	
 	
