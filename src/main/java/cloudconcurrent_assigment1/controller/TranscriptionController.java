@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+// core feature: receive audio, forward to openAI and return transcribed text
 
 @RestController
 public class TranscriptionController {
@@ -38,6 +39,7 @@ public class TranscriptionController {
 	private static final Logger logger = LoggerFactory.getLogger(TranscriptionController.class);
 
 	
+	//openAIAPi read from env on startup only - not hardcoded or logged
 	public TranscriptionController(@Value("${OPENAI_API_KEY}") String openAiAPIKey, AppStateService appStateService) {
 		this.openAiAPIKey = openAiAPIKey;
 		this.restClient = RestClient.create();
@@ -49,6 +51,8 @@ public class TranscriptionController {
 		
 		logger.info("Received file: {}, size: {} bytes", audio.getOriginalFilename(), audio.getSize());
 		
+		//OpenAI detects audio format from the filename extension, not raw bytes
+		// so the original filename gets reattqached here
 		ByteArrayResource audioResource = new ByteArrayResource(audio.getBytes()) {
 			@Override
 			public String getFilename() {
@@ -56,10 +60,13 @@ public class TranscriptionController {
 			}
 		};
 		
+		//MultiValueMap is the preferred multipart body for blocking restClient
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("file", audioResource);
 		body.add("model", "gpt-4o-mini-transcribe");
 		
+		
+		//Blocking call - pause this thread until OpenAI responds
 		String rawResponse = restClient.post()
 				.uri("https://api.openai.com/v1/audio/transcriptions")
 				.header("Authorization", "Bearer " + openAiAPIKey)
@@ -67,6 +74,9 @@ public class TranscriptionController {
 				.body(body)
 				.retrieve()
 				.body(String.class);
+		
+		
+		//Extract what we need rather then getting whole OpenAI raw response
 						
 		JsonNode json = JsonMapper.shared().readTree(rawResponse);
 		String text = json.get("text").asString();
