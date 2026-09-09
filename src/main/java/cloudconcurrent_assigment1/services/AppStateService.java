@@ -11,8 +11,12 @@ public class AppStateService {
 
     private final Instant serverStartTime;
     
+    //AtomicBoolean to prevent two simultaneous shutdown request from both succeeding
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
     
+    
+    //AtomicLong instead of long: multiple concurrent transcriptions could read and update 
+    //these at the same time, which silently could lose updates
     private final AtomicLong inputTokens = new AtomicLong(0);
     
     private final AtomicLong outputTokens = new AtomicLong(0);
