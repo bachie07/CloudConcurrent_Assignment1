@@ -83,6 +83,7 @@ async function uploadAudio(audioBlob){
 
     } finally {
         statusE1.classList.remove(`recording`);
+		statusMessage2.textContent = 'Start again? Click the record button';
         btn.disabled = false;
     }
     
@@ -109,7 +110,6 @@ btn.addEventListener("click", () => {
 	else{
 		
 		btn.classList.remove('recording');
-
 		recording = false;
 		recorder.stop();
 		

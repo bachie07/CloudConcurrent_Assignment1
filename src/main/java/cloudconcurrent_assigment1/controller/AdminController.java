@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 public class AdminController {
 	
 	private final AppStateService appStateService;
+	
 	private final ApplicationContext applicationContext;
 
 			
@@ -82,6 +83,7 @@ public class AdminController {
 					Thread.currentThread().interrupt();
 					
 				}
+				
 				SpringApplication.exit(applicationContext, () -> 0); // // shutdown command
 				
 			}).start();
