@@ -5,10 +5,47 @@
     align-items: center;
     gap: 10px;
     padding: 10px;
-    margin: 20px;
-    border: 2px solid black;
+    margin-top: 100px;
+
 } 
 
+#title{
+    margin-left: 10px;
+}
+
+#title h1{
+    font-weight: 400;
+    font-size: 1.3rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    height: 30vh;
+}
+
+
+#text-display {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#text-display h1 {
+
+    font-weight: 400;
+    font-size: 1.5rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #808080;
+
+}
+
+
+#statusMess{
+
+    color: black;
+    font-size: 2rem;
+
+}
 .status {
     color: gray;
     font-weight: bold;
@@ -16,16 +53,38 @@
 
 .status.recording{
     color: red;
-    background-color:antiquewhite;
+    background-color:white;
 }
 
-.dot{
-    
+
+#recordButton {
+    background-image: url('images/button.png');
+    background-size: cover;
+    background-position: center;
+    width: 140px;   /* match your image's dimensions/aspect ratio */
+    height: 120px;
+    border: none;
+    background-color: transparent; /* hides the "Record" text if you don't want it showing */
+    transition: transform 0.2s ease;
 }
+
+#recordButton:hover{
+    transform: scale(1.1)
+
+}
+
+#recordButton.recording{
+    background-image: url('images/stopbutton.webp');
+    background-size: 60% 70%;
+    background-repeat: no-repeat;
+    background-position: center 30%;
+}
+
 
 
 button{
 
-    padding: 8px 16px;
+    padding: 0;
 
 }
+

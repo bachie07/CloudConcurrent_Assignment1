@@ -25,7 +25,7 @@ public class AdminController {
 	private final ApplicationContext applicationContext;
 
 			
-	private double calculateUpTimeSeconds(Instant start, Instant now) { // calucation duration between server start and current time
+	private double calculateUpTimeSeconds(Instant start, Instant now) { // calculation duration between server start and current time
 		
 		Duration duration = Duration.between(start, now);
 		

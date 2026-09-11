@@ -3,6 +3,8 @@ const statusE1 = document.querySelector(".status")
 
 const statusMessage = document.querySelector("#statusMess")
 
+const statusMessage2 = document.querySelector('#statusMess2')
+
 const btn = document.querySelector("#recordButton")
 
 let recording = false;
@@ -94,8 +96,9 @@ btn.addEventListener("click", () => {
 		
 		recording = true;
 		statusMessage.textContent = 'Recording';
+		statusMessage2.textContent = 'press the stop button to transcribe'
 		statusE1.classList.add('recording');
-		btn.textContent = "Stop";
+		btn.classList.add('recording');
 		btn.disabled = true;
 		startRecording().then(() => {
 			btn.disabled = false;
@@ -105,9 +108,10 @@ btn.addEventListener("click", () => {
 	
 	else{
 		
+		btn.classList.remove('recording');
+
 		recording = false;
 		recorder.stop();
-		btn.textContent = "Record";
 		
 	}
     

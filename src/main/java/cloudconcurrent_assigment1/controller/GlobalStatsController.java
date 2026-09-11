@@ -9,13 +9,11 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @RestController
 public class GlobalStatsController {
 	
 	
 	private final AppStateService appStateService;
-
 	
 	public GlobalStatsController(AppStateService appStateService) {
 		
