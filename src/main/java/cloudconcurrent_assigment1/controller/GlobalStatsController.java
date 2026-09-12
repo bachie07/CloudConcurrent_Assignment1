@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
+
+//return the input and output tokens used per request
 @RestController
 public class GlobalStatsController {
 	
