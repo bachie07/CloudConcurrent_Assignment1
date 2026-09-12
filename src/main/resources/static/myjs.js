@@ -22,7 +22,10 @@ async function startRecording(){ // start recording function
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true});
 
-    recorder = new MediaRecorder(stream);
+	
+	// lower audio bits since its speech, help optimize upload size / time 
+	
+	recorder = new MediaRecorder(stream, { audioBitsPerSecond: 32000 });	
 	
 	const chunks = [];
 	
@@ -42,9 +45,12 @@ async function startRecording(){ // start recording function
     console.log("Recording started...")
 
 
-    }
+    } 
     
     catch(error){
+		
+		// meesage for mic access failure, handling the permission problem instead of upload or networl
+		
         statusMessage.textContent = "Idle";
         statusE1.classList.remove('recording');
         console.log("Mic access failed")
@@ -77,11 +83,22 @@ async function uploadAudio(audioBlob){
     }
 
     catch(error){
+		
+		//handling server error and network error 
 
-        statusMessage.textContent = "Transcription failed";
+		if (error.message.includes("Server error")) {
+			
+		    statusMessage.textContent = "Server error - please try again in a moment";
+			
+		} else {
+			
+		    statusMessage.textContent = "Network error - check your connection and try again";
+		}
         console.error("Upload failed: ", error)
 
     } finally {
+		// if user already get transcription 
+		
         statusE1.classList.remove(`recording`);
 		statusMessage2.textContent = 'Start again? Click the record button';
         btn.disabled = false;
@@ -93,6 +110,7 @@ async function uploadAudio(audioBlob){
 
 btn.addEventListener("click", () => {
 	
+	// handling click event 
 	if(!recording){
 		
 		recording = true;
