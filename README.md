@@ -33,12 +33,31 @@ that uses this is givena reference to that same single object through the constr
 
 
 ##Configuration (local vs TITAN)
+Environment specific settings are handled through spring profiles. Two profiles exists alongside "application.properties"
+
+-"application-local.properties": used for local development. Sets a file upload limit (25mb)
+
+-"application-titan.properties": used when deployed. Sets a stricter upload limit (10mb)
+
+Which profile is active is controlled by "SPRING_PROFILES_ACTIVE" env variable - sets to "local" when local runs.
+
+The OPENAI key is handled purely through env variables since its a secret rather than a configuration setting. 
 
 
-##Concurrency Approach
+##Concurrency Approach:
+
 
 
 ##API endpoints
+
+| Method | Path                        | Description                              |
+|--------|-----------------------------|-------------------------------------------|
+| GET    | `/`                          | Serves the frontend page                 |
+| POST   | `/api/transcribe`            | Accepts audio, returns transcribed text  |
+| GET    | `/api/v1/admin/uptime`       | Server start time and uptime             |
+| POST   | `/api/v1/admin/shutdown`     | Requests graceful server shutdown        |
+| GET    | `/api/v1/global/stats`       | Total tokens used since server start     |
+
 
 
 ##Deployment difficulties and lesson learned
